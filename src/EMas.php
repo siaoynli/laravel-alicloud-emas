@@ -52,7 +52,7 @@ class EMas
     }
 
 
-    public function push($title = null, $body = null, $parameters = null)
+    public function push($title = null, $body = null, $parameters = [])
     {
         if (!$title) {
             throw  new \Exception("请传入Title参数");
@@ -72,7 +72,6 @@ class EMas
                 'StoreOffline' => true,
                 'Body' => $title,
                 'Title' => $body,
-
                 'TargetValue' => $this->config["ios_device_id"],
             ];
 
@@ -135,10 +134,10 @@ class EMas
                 return ["state" => 0, "info" => $result];
             }
         } catch (ClientException $e) {
-            throw  \Exception("ClientException :" . $e->getErrorMessage());
+            throw  new \Exception("ClientException :" . $e->getErrorMessage());
         } catch (ServerException $e) {
             return $e->getErrorMessage();
-            throw  \Exception("ServerException :" . $e->getErrorMessage());
+            throw  new \Exception("ServerException :" . $e->getErrorMessage());
         }
     }
 
