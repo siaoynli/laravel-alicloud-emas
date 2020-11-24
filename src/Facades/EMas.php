@@ -8,13 +8,13 @@
 * @Description:
 */
 
-namespace Siaoynli\AliCloud\Sms\Facades;
+namespace Siaoynli\AliCloud\EMas\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class Sms extends Facade
+class EMas extends Facade
 {
     protected static function getFacadeAccessor() {
-        return 'sms';
+        return 'emas';
     }
 }

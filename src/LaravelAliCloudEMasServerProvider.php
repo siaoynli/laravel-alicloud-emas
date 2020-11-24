@@ -1,10 +1,10 @@
 <?php
 
-namespace Siaoynli\AliCloud\Sms;
+namespace Siaoynli\AliCloud\EMas;
 
 use Illuminate\Support\ServiceProvider;
 
-class LaravelAliCloudSmsServerProvider extends ServiceProvider
+class LaravelAliCloudEMasServerProvider extends ServiceProvider
 {
     protected $defer = true;
     /**
@@ -14,8 +14,8 @@ class LaravelAliCloudSmsServerProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('sms', function ($app) {
-            return new Sms($app['config']);
+        $this->app->singleton('emas', function ($app) {
+            return new EMas($app['config']);
         });
     }
 
@@ -27,13 +27,13 @@ class LaravelAliCloudSmsServerProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/../config/alicloud-sms.php' => config_path('alicloud-sms.php'),
+            __DIR__ . '/../config/alicloud-emas.php' => config_path('alicloud-emas.php'),
         ]);
     }
 
     public function provides()
     {
-        return ['sms'];
+        return ['emas'];
     }
 
 }
