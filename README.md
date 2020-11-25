@@ -37,6 +37,8 @@ use Siaoynli\AliCloud\EMas\Facades\EMas;
 EMas::deviceId("f72fb02413304ad8a16c017c3a")->push("测试","测试包");
 //所有客户端
 EMas::deviceId("ALL")->push("测试","测试包");
+
+EMas::pushType("NOTICE")->device("IOS")->target("ALL")->deviceId("ALL")->push("测试","测试包");
 ```
 
 返回结果
