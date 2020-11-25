@@ -87,8 +87,8 @@ class EMas
             'AppKey' => $this->app_key,
             'PushType' => $this->push_type,
             'StoreOffline' => true,
-            'Body' => $title,
-            'Title' => $body,
+            'Title' => $title,
+            'Body' => $body,
             'TargetValue' => $this->device_id,
             'Target' => $this->target,
         ];
