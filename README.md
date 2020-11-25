@@ -13,54 +13,49 @@ composer require siaoynli/laravel-alicloud-emas
 ```
 add the   
 ```
-Siaoynli\AliCloud\Sms\LaravelAliCloudSmsServerProvider::class   
+Siaoynli\AliCloud\EMas\LaravelAliCloudEMasServerProvider::class   
 ```
 to the providers array in config/app.php
 
 ```
-php artisan vendor:publish --provider="Siaoynli\AliCloud\Sms\LaravelAliCloudSmsServerProvider"
+php artisan vendor:publish --provider="Siaoynli\AliCloud\EMas\LaravelAliCloudEMasServerProvider"
 ```
 
 
 ## alias
 
 ```
- "Sms" => \Siaoynli\AliCloud\Sms\Facades\Sms::class,
+ "EMas" => \Siaoynli\AliCloud\EMas\Facades\EMas::class,
 ```
 
 ## 使用方法
 
 ```php
 
-use Siaoynli\AliCloud\Sms\Facades\Sms;
-
-$message=[
-  "code"=>"1234",  //code 对应模板里面的code 变量
-  "product"=>"xx网", //product 对应模板里面的product 变量
-];
- 
-          $result=Sms::to("18906715000")->signName("注册验证")->template("SMS_29010034")->send($message);
+use Siaoynli\AliCloud\EMas\Facades\EMas;
+//单客户端
+EMas::deviceId("f72fb02413304ad8a16c017c3a")->push("测试","测试包");
+//所有客户端
+EMas::deviceId("ALL")->push("测试","测试包");
 ```
 
 返回结果
 ```php
-  "state" => 1
-  "info" => array:4 [▼
-    "Message" => "OK"
-    "RequestId" => "A8A513E0-E631-4929-882B-7219D01F0E26"
-    "BizId" => "442107374224819990^0"
-    "Code" => "OK"
-  ]
+//成功
+{
+"state": 1,
+"info": {
+          "RequestId": "4AC202AB-87CE-4641-A02E-5FBCF99DF336",
+          "MessageId": "2386074847883392"
+        }
+}
+//失败
+{
+"state": 0,
+"info": ""
+}
 
-//或者
-array:2 [▼
-  "state" => 0
-  "info" => array:3 [▼
-    "Message" => "触发分钟级流控Permits:1"
-    "RequestId" => "89BFE73F-84FC-42D7-90F8-AFFA6C42EB73"
-    "Code" => "isv.BUSINESS_LIMIT_CONTROL"
-  ]
-]
+
 
 ```
 

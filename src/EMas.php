@@ -14,8 +14,10 @@ class EMas
     protected $config;
     protected $client;
     protected $push_type = "NOTICE";
+    protected $app_key = "";
     protected $device = "IOS";
-    protected $device_id = "ALL";
+    protected $device_id = "";
+    protected $target = "DEVICE";
 
 
     public function __construct(Repository $config)
@@ -29,6 +31,7 @@ class EMas
         } catch (ClientException $e) {
             throw  new ClientException("ClientException :" . $e->getMessage());
         }
+        $this->app_key = $this->config["app_key"];
     }
 
 
@@ -41,6 +44,12 @@ class EMas
     public function device($device = "IOS")
     {
         $this->device = $device;
+        return $this;
+    }
+
+    public function target($target = "DEVICE")
+    {
+        $this->target = $target;
         return $this;
     }
 
@@ -62,56 +71,47 @@ class EMas
             throw  new \Exception("请传入Body参数");
         }
 
-        $client_type = $this->config["client_type"] ?? "http";
-        if ($this->device == "IOS") {
-            $query = [
-                'RegionId' => $this->config["region"],
-                'AppKey' => $this->config["emas_app_key"],
-                'PushType' => $this->push_type,
-                'DeviceType' => "iOS",
-                'StoreOffline' => true,
-                'Body' => $title,
-                'Title' => $body,
-                'TargetValue' => $this->config["ios_device_id"],
-            ];
 
+        if (!$this->device_id) {
+            throw  new \Exception("请传入TargetValue参数");
+        }
+
+        if ($this->config['dev'] && $this->device_id == "ALL") {
+            throw  new \Exception("开发模式下，请传具体设备id");
+        }
+
+        $client_type = $this->config["client_type"] ?? "https";
+
+        $query = [
+            'RegionId' => $this->config["region"],
+            'AppKey' => $this->app_key,
+            'PushType' => $this->push_type,
+            'StoreOffline' => true,
+            'Body' => $title,
+            'Title' => $body,
+            'TargetValue' => $this->device_id,
+            'Target' => $this->target,
+        ];
+
+
+        if ($this->device == "IOS") {
+            $query['DeviceType'] = 'iOS';
             if ($this->config['dev']) {
                 $query['iOSApnsEnv'] = 'DEV';
-                $query['Target'] = 'DEVICE';
-            } else {
-                $query['Target'] = 'ALL';
             }
-
             if ($parameters && is_array($parameters)) {
                 $query['iOSExtParameters'] = json_encode($parameters);
             }
 
         } else {
-
-            $query = [
-                'RegionId' => $this->config["region"],
-                'AppKey' => $this->config["emas_app_key"],
-                'PushType' => $this->push_type,
-                'DeviceType' => "ANDROID",
-                'StoreOffline' => true,
-                'Body' => $title,
-                'Title' => $body,
-                'TargetValue' => $this->config["android_device_id"],
-                'AndroidNotificationChannel' => "1",
-                'AndroidNotificationVivoChannel' => "1",
-                'AndroidNotificationHuaweiChannel' => "1",
-                'AndroidNotificationXiaomiChannel' => "1",
-            ];
-
-            if ($this->config['dev']) {
-                $query['Target'] = 'DEVICE';
-            } else {
-                $query['Target'] = 'ALL';
-            }
+            $query['DeviceType'] = "ANDROID";
+            $query['AndroidNotificationChannel'] = "1";
+            $query['AndroidNotificationVivoChannel'] = "1";
+            $query['AndroidNotificationHuaweiChannel'] = "1";
+            $query['AndroidNotificationXiaomiChannel'] = "1";
             if ($parameters && is_array($parameters)) {
                 $query['AndroidExtParameters'] = json_encode($parameters);
             }
-
         }
 
         try {
