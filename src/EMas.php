@@ -134,10 +134,10 @@ class EMas
                 return ["state" => 0, "info" => $result];
             }
         } catch (ClientException $e) {
-            throw  new \Exception("ClientException :" . $e->getErrorMessage());
+            throw  new \ClientException("ClientException :" . $e->getErrorMessage());
         } catch (ServerException $e) {
             throw  new \Exception("ServerException :" . $e->getErrorMessage());
         }
     }
-    
+
 }
