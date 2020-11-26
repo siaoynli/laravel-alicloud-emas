@@ -12,20 +12,18 @@ class EMas
 {
 
     protected $config;
-    protected $client;
     protected $push_type = "NOTICE";
     protected $app_key = "";
-    protected $device = "IOS";
+    protected $device_type = "";
     protected $device_id = "";
     protected $target = "DEVICE";
-
 
     public function __construct(Repository $config)
     {
         $this->config = $config->get("alicloud-emas");
 
         try {
-            $this->client = AlibabaCloud::accessKeyClient($this->config["key"], $this->config["secret"])
+            AlibabaCloud::accessKeyClient($this->config["key"], $this->config["secret"])
                 ->regionId($this->config["region"])
                 ->asDefaultClient();
         } catch (ClientException $e) {
@@ -41,9 +39,9 @@ class EMas
         return $this;
     }
 
-    public function device($device = "IOS")
+    public function deviceType($device_type = "IOS")
     {
-        $this->device = $device;
+        $this->device_type = $device_type;
         return $this;
     }
 
@@ -71,6 +69,9 @@ class EMas
             throw  new \Exception("请传入Body参数");
         }
 
+        if (!$this->device_type) {
+            throw  new \Exception("请传入DeviceType参数");
+        }
 
         if (!$this->device_id) {
             throw  new \Exception("请传入TargetValue参数");
@@ -94,7 +95,7 @@ class EMas
         ];
 
 
-        if ($this->device == "IOS") {
+        if (strtoupper($this->device_type) == "IOS") {
             $query['DeviceType'] = 'iOS';
             if ($this->config['dev']) {
                 $query['iOSApnsEnv'] = 'DEV';
@@ -113,7 +114,6 @@ class EMas
                 $query['AndroidExtParameters'] = json_encode($parameters);
             }
         }
-
         try {
             $result = AlibabaCloud::rpc()
                 ->product('Push')
@@ -134,11 +134,10 @@ class EMas
                 return ["state" => 0, "info" => $result];
             }
         } catch (ClientException $e) {
-            throw  new ClientException("ClientException :" . $e->getMessage());
+            throw  new \Exception("ClientException :" . $e->getErrorMessage());
         } catch (ServerException $e) {
             throw  new \Exception("ServerException :" . $e->getErrorMessage());
         }
     }
-
-
+    
 }
